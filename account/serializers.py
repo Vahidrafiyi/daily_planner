@@ -21,6 +21,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         if password != password2:
             raise serializers.ValidationError({'password': 'Passwords must be match.'})
+        if len(password) < 8 :
+            raise serializers.ValidationError({'password': 'Passwords must be at least 8 characters'})
         account.password = password
         account.password2 = password2
         account.save()
