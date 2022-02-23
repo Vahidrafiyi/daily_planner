@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'planner.apps.PlannerConfig',
     'profile_app.apps.ProfileAppConfig',
     'account.apps.RegistrationConfig',
+    'django_jalali',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,7 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
