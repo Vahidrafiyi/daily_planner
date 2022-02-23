@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from account.models import SignUp,LogIn
@@ -12,7 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        account = SignUp(
+        account = User(
             username=self.validated_data['username'],
             email=self.validated_data['email']
         )
@@ -23,7 +24,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': 'Passwords must be match.'})
         if len(password) < 8 :
             raise serializers.ValidationError({'password': 'Passwords must be at least 8 characters'})
-        account.password = password
-        account.password2 = password2
+        account.set_password(password)
         account.save()
         return account
+
+class Login(serializers.ModelSerializer):
+    class Meta:
+        model = LogIn
+        fields = ['id','username', 'password']
+        extra_kwargs = {
+            'password': {'write_only':True}
+        }
