@@ -10,3 +10,14 @@ class DaillyPlannerAdmin(admin.ModelAdmin):
 @register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = ('task_title', 'time')
+    def has_add_permission(self, request):
+        num_objects = Task.objects.count()
+        if num_objects >= 5:
+            return False
+        else:
+            return True
+
+@register(EnterExit)
+class EnterExitAdmin(admin.ModelAdmin):
+    list_display = ('user', 'enter_time', 'exit_time')
+
