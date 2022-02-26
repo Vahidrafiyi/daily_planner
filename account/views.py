@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -33,3 +34,12 @@ class LoginAPI(APIView):
             data['username'] = request.user.username
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Logout(APIView):
+    def get(self, request, format=None):
+        # simply delete the token to force a login
+        request.user.auth_token.delete()
+        data = {}
+        data['logout'] = f'{request.user.username} logged out and its token deleted'
+        return Response(status=status.HTTP_200_OK)
+

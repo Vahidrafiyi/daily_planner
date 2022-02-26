@@ -13,6 +13,6 @@ class SignUp(models.Model):
 class LogIn(models.Model):
     username = models.CharField(max_length=24)
     password = models.CharField(max_length=16)
-
+    
     def __str__(self):
         return f'{self.username} loged in'

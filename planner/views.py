@@ -1,4 +1,8 @@
+import datetime
+
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import HttpResponse
 from rest_framework import status, mixins
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
@@ -9,25 +13,52 @@ from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from planner.models import DailyPlanner, Task, EnterExit
-from planner.serializers import DailyPlannerSerializer, TaskSerializer, EnterExitSerializer, UserSerializer
+from planner.models import DailyPlanner, Task, SubTask
+from planner.serializers import DailyPlannerSerializer, TaskSerializer, UserSerializer, \
+    SubTaskSerializer, TodayGoalSerializer
 
 
-class AllPlan(APIView):
-    def get(self, request, username):
-        queryset = DailyPlanner.objects.filter(user__username=username)
-        serializer = DailyPlannerSerializer(queryset, many=True)
+# TODAY GOALS API
+class ShowTodayGoalAPI(APIView):
+    def get(self, request):
+        queryset = DailyPlanner.objects.filter(user=request.user, date=datetime.date.today())
+        serializer = TodayGoalSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class EnterTodayGoalAPI(APIView):
     def post(self, request):
-        serializer = DailyPlannerSerializer(data=request.data)
+        serializer = TodayGoalSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.validated_data['user'] = request.user
+            print(serializer.validated_data)
+            print(request.user)
+            if request.user.is_staff == True:
+                data = {}
+                data['role limitation'] = 'the staff can not specify today goal.'
+                return Response(data, status=status.HTTP_401_UNAUTHORIZED)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, username):
-        query = DailyPlanner.objects.get(user__username=username)
+
+# DAILY PLAN API
+class EnterPlan(APIView):
+    def post(self, request):
+        serializer = DailyPlannerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.validated_data['user'] = request.user
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AllPlan(APIView):
+    def get(self, request):
+        queryset = DailyPlanner.objects.filter(user=request.user)
+        serializer = DailyPlannerSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        query = DailyPlanner.objects.get(user=request.user, date=datetime.date.today())
         serializer = DailyPlannerSerializer(query, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -35,14 +66,48 @@ class AllPlan(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TaskAPI(ListAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+# class TaskAPI(ListAPIView):
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
 
 class UserAPI(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+# TASK API
+class EnterTaskAPI(APIView):
+    def post(self, request):
+        serializer = TaskSerializer(data=request.data)
+        objects_number = Task.objects.filter(user=request.user, date=datetime.date.today()).count()
+        print(request.user)
+        # print(serializer.validated_data['user'])
+        print(request.user.id)
+        if serializer.is_valid():
+            serializer.validated_data['user'] = request.user
+            if objects_number >= 5:
+                data = {'task limitation':'you can have only 5 tasks a day'}
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data=data)
+            else:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TaskAPI(APIView):
+    def get(self, request):
+        print(request.user)
+        queryset = Task.objects.filter(user=request.user, date__lt=datetime.date.today(), done=False)
+        queryset2 = Task.objects.filter(date=datetime.date.today(), user=request.user)
+        serializer = TaskSerializer(many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        query = Task.objects.get(user=request.user)
+        serializer = TaskSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class BeverageCreate(CreateAPIView, mixins.DestroyModelMixin):
 #     serializer_class = BeverageSerializer
@@ -57,3 +122,34 @@ class UserAPI(ListAPIView):
 #         if self.get_queryset().exists():
 #             raise ValidationError ('you have already voted for this post :)')
 #         serializer.save(user=self.request.user, drink__exact=self.request.data['drink'])
+
+# SUB_TASK API
+class EnterSubTaskAPI(APIView):
+    def post(self, request):
+        serializer = SubTaskSerializer(data=request.data)
+        objects_number = SubTask.objects.filter(user=request.user, date=datetime.date.today()).count()
+        if serializer.is_valid():
+            if objects_number >= 7:
+                data = {'sub_task limitation':'you can have only 7 tasks a day'}
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data=data)
+            else:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubTaskAPI(APIView):
+    def get(self, request):
+        queryset = SubTask.objects.filter(user=request.user)
+        serializer = SubTaskSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        query = SubTask.objects.get(user=request.user)
+        serializer = SubTaskSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

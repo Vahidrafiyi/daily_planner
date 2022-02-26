@@ -1,7 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from planner.models import DailyPlanner, Task, EnterExit
+from planner.models import DailyPlanner, Task, SubTask
+
+class TodayGoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyPlanner
+        fields = ['id','today_goal', 'date', 'done']
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,21 +17,20 @@ class UserSerializer(serializers.ModelSerializer):
 class DailyPlannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyPlanner
-        fields = '__all__'
-        depth = 1
+        exclude = ['today_goal', 'user']
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
+        exclude =['user']
 
-class EnterExitSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EnterExit
-        fields = '__all__'
 
 # class BeverageSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = DailyPlanner
 #         fields = ('user', 'drink')
 
+class SubTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubTask
+        fields = '__all__'

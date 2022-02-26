@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import register
 
-from planner.models import DailyPlanner, EnterExit, Task
+from planner.models import DailyPlanner, Task, SubTask
+
 
 @register(DailyPlanner)
 class DaillyPlannerAdmin(admin.ModelAdmin):
@@ -9,15 +10,10 @@ class DaillyPlannerAdmin(admin.ModelAdmin):
 
 @register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('task_title', 'time')
-    def has_add_permission(self, request):
-        num_objects = Task.objects.count()
-        if num_objects >= 5:
-            return False
-        else:
-            return True
+    list_display = ('task_title', 'time', 'user', 'done')
 
-@register(EnterExit)
-class EnterExitAdmin(admin.ModelAdmin):
-    list_display = ('user', 'enter_time', 'exit_time')
+@register(SubTask)
+class SubTaskAdmin(admin.ModelAdmin):
+    list_display = ('user', 'subtask_title')
+
 

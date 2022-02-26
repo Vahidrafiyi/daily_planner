@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'planner.apps.PlannerConfig',
     'profile_app.apps.ProfileAppConfig',
     'account.apps.RegistrationConfig',
+    'eventlog.apps.EventlogConfig',
     'django_jalali',
 ]
 
@@ -106,10 +107,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.IsAuthenticated'
     ]
 }
 
