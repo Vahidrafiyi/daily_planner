@@ -17,7 +17,8 @@ urlpatterns = [
     path('edit-today-subtask/<str:username>', SubTaskAPI.as_view()),
     # TodayGoal
     path('enter-today-goal/', EnterTodayGoalAPI.as_view()),
-    path('show-today-goal/', ShowTodayGoalAPI.as_view()),
+    path('today-goal/', ShowTodayGoalAPI.as_view()),
+    path('edit-today-goal/', EnterTodayGoalAPI.as_view()),
 
     path('tasks/', TaskAPI.as_view()),
     path('users/', UserAPI.as_view()),

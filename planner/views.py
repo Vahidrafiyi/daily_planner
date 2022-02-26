@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from planner.models import DailyPlanner, Task, SubTask
+from planner.models import DailyPlanner, Task, SubTask, TodayGoal
 from planner.serializers import DailyPlannerSerializer, TaskSerializer, UserSerializer, \
     SubTaskSerializer, TodayGoalSerializer
 
@@ -21,23 +21,35 @@ from planner.serializers import DailyPlannerSerializer, TaskSerializer, UserSeri
 # TODAY GOALS API
 class ShowTodayGoalAPI(APIView):
     def get(self, request):
-        queryset = DailyPlanner.objects.filter(user=request.user, date=datetime.date.today())
+        queryset = TodayGoal.objects.filter(user=request.user, done=False)
         serializer = TodayGoalSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class EnterTodayGoalAPI(APIView):
     def post(self, request):
         serializer = TodayGoalSerializer(data=request.data)
+        count = TodayGoal.objects.filter(date=datetime.date.today()).count()
         if serializer.is_valid():
+            data = {}
             serializer.validated_data['user'] = request.user
             print(serializer.validated_data)
             print(request.user)
             if request.user.is_staff == True:
-                data = {}
                 data['role limitation'] = 'the staff can not specify today goal.'
+                return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+            if count >= 3 :
+                data['number limit'] = 'You can not set more than 3 goals per day'
                 return Response(data, status=status.HTTP_401_UNAUTHORIZED)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        query = TodayGoal.objects.get(user=request.user, date=datetime.date.today())
+        serializer = TodayGoalSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,7 +97,7 @@ class EnterTaskAPI(APIView):
         if serializer.is_valid():
             serializer.validated_data['user'] = request.user
             if objects_number >= 5:
-                data = {'task limitation':'you can have only 5 tasks a day'}
+                data = {'task limitation':'you can have only 5 tasks per day'}
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data=data)
             else:
                 serializer.save()
@@ -96,9 +108,8 @@ class EnterTaskAPI(APIView):
 class TaskAPI(APIView):
     def get(self, request):
         print(request.user)
-        queryset = Task.objects.filter(user=request.user, date__lt=datetime.date.today(), done=False)
-        queryset2 = Task.objects.filter(date=datetime.date.today(), user=request.user)
-        serializer = TaskSerializer(many=True)
+        queryset = Task.objects.filter(date=datetime.date.today(), user=request.user)
+        serializer = TaskSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request):
@@ -130,7 +141,7 @@ class EnterSubTaskAPI(APIView):
         objects_number = SubTask.objects.filter(user=request.user, date=datetime.date.today()).count()
         if serializer.is_valid():
             if objects_number >= 7:
-                data = {'sub_task limitation':'you can have only 7 tasks a day'}
+                data = {'sub_task limitation':'you can have only 7 tasks per day'}
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data=data)
             else:
                 serializer.save()

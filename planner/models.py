@@ -1,17 +1,24 @@
+import datetime
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django_jalali.db import models as jmodels
 
+from jalali_date import date2jalali
+
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='task')
     task_title = models.CharField(max_length=255)
     time = models.TimeField()
-    date = jmodels.jDateField(default='1400:12:06')
+    date = models.DateField(default='1400-12-7')
     done = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.task_title}'
+
+    def date_to_jalali(self):
+        return date2jalali(self.date)
 
 
 class SubTask(models.Model):
@@ -25,6 +32,14 @@ class SubTask(models.Model):
     def __str__(self):
         return f'{self.subtask_title}'
 
+class TodayGoal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    today_goal = models.CharField(max_length=128)
+    date = jmodels.jDateField(default=datetime.date.today())
+    done = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} {self.today_goal}'
 
 class DailyPlanner(models.Model):
     # BOSS = 1
@@ -55,7 +70,7 @@ class DailyPlanner(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plan+')
     role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
-    today_goal = models.TextField()
+    today_goal = models.ForeignKey(TodayGoal, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='plan+', null=True)
     sub_task = models.ForeignKey(SubTask, on_delete=models.CASCADE, related_name='plan+', null=True, blank=True)
     inspiration = models.TextField(blank=True, null=True)

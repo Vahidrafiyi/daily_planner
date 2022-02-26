@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.contrib.admin import register
 
-from planner.models import DailyPlanner, Task, SubTask
+from planner.models import DailyPlanner, Task, SubTask, TodayGoal
+from django_jalali.admin.filters import JDateFieldListFilter
+import django_jalali.admin as jadmin
 
 
 @register(DailyPlanner)
@@ -15,5 +17,12 @@ class TaskAdmin(admin.ModelAdmin):
 @register(SubTask)
 class SubTaskAdmin(admin.ModelAdmin):
     list_display = ('user', 'subtask_title')
+
+@register(TodayGoal)
+class TodayGoalAdmin(admin.ModelAdmin):
+    list_display = ('user', 'today_goal', 'date', 'done')
+    list_filter = (
+        ('date', JDateFieldListFilter),
+    )
 
 
