@@ -11,7 +11,7 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='task')
     task_title = models.CharField(max_length=255)
     time = models.TimeField()
-    date = models.DateField(default='1400-12-7')
+    date = jmodels.jDateField(default='1400-12-07')
     done = models.BooleanField(default=False)
 
     def __str__(self):
@@ -26,7 +26,7 @@ class SubTask(models.Model):
     task = models.ForeignKey(Task, models.CASCADE)
     subtask_title = models.CharField(max_length=255)
     time = models.TimeField()
-    date = jmodels.jDateField(default='1400:12:06')
+    date = jmodels.jDateField(default='1400-12-06')
     done = models.BooleanField(default=False)
 
     def __str__(self):
@@ -35,7 +35,7 @@ class SubTask(models.Model):
 class TodayGoal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     today_goal = models.CharField(max_length=128)
-    date = jmodels.jDateField(default=datetime.date.today())
+    date = jmodels.jDateField(default='1400-12-07')
     done = models.BooleanField(default=False)
 
     def __str__(self):
@@ -81,7 +81,7 @@ class DailyPlanner(models.Model):
     gaming_time = models.TimeField(blank=True, null=True)
     drink = models.PositiveSmallIntegerField(default=0, validators=(MinValueValidator(0), MaxValueValidator(8)))
     mind_dump = models.TextField(blank=True, null=True)
-    date = jmodels.jDateField(auto_now=True)
+    date = jmodels.jDateField(default='1400-12-07')
     what_day = models.CharField(max_length=3, choices=WHAT_DAYS, default=WHAT_DAYS[0][0])
 
     def __str__(self):
