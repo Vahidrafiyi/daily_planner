@@ -163,4 +163,27 @@ class SubTaskAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class DrinkAPI(APIView):
+    def get(self, request):
+        query = DailyPlanner.objects.filter(user=request.user, date=datetime.date.today())
+        # print(query)
+        if query[0].drink < 8:
+            # print(query[0].drink)
+            query.update(drink=query[0].drink + 1)
+            serializer = DailyPlannerSerializer(query, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {'drink limitation': 'you can not add more than 8 glass per day'}
+        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+    # def get(self, request):
+    #     query = DailyPlanner.objects.filter(user=request.user, date=datetime.date.today())
+    #     serializer = DailyPlannerSerializer(query, data=request.data)
+    #     if serializer.is_valid():
+    #         query.update(drink=query[0].drink+1)
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 

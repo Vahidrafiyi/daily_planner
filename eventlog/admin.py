@@ -4,4 +4,4 @@ from eventlog.models import EnterExit
 
 @register(EnterExit)
 class EnterExitAdmin(admin.ModelAdmin):
-    list_display = ('user', 'enter_time', 'exit_time')
+    list_display = ('user', 'enter_time', 'exit_time', 'date', 'work_time')
