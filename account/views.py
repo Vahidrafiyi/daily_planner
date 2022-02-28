@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from account.models import SignUp
-from account.serializers import RegistrationSerializer, Login
+from account.models import SignUp, Profile
+from account.serializers import RegistrationSerializer, Login, ProfileSerializer
 
 
 class RegisterationAPI(APIView):
@@ -43,5 +43,19 @@ class Logout(APIView):
         request.user.auth_token.delete()
         data = {}
         data['logout'] = f'{request.user.username} logged out and its token deleted'
+        return Response(data, status=status.HTTP_200_OK)
+
+class ProfileAPI(APIView):
+    def get(self, request):
+        query = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(query)
         return Response(status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        query = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

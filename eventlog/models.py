@@ -8,7 +8,7 @@ class EnterExit(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='enterexit')
     enter_time = jmodels.jDateTimeField(blank=True, null=True)
     exit_time = jmodels.jDateTimeField(blank=True, null=True)
-    work_time = models.DurationField(blank=True, null=True)
+    work_time = models.DurationField(default=None, blank=True, null=True)
     date = jmodels.jDateField(default='1400-12-07')
 
     class Meta:

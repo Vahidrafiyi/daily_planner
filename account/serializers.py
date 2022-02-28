@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from account.models import SignUp,LogIn
+from account.models import SignUp, LogIn, Profile
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
@@ -35,3 +36,8 @@ class Login(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only':True}
         }
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        exclude = ['user']
