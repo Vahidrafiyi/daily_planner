@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from account.models import SignUp, LogIn, Profile
+from account.models import SignUp, LogIn, Profile, SalaryReceipt
 
 
 @register(SignUp)
@@ -10,3 +10,7 @@ class SignUpAdmin(admin.ModelAdmin):
 @register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user','employee_code', 'phone' )
+
+@register(SalaryReceipt)
+class SalaryReceiptAdmin(admin.ModelAdmin):
+    list_display = ('user','employee_code', 'payment_date', 'salary' )

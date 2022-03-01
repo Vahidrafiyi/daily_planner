@@ -3,6 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from django_jalali.db import models as jmodels
+from jalali_date import datetime2jalali, date2jalali
+
+
 class SignUp(models.Model):
     username = models.CharField(max_length=24, unique=True)
     email = models.EmailField(unique=True)
@@ -34,10 +37,21 @@ class Profile(models.Model):
     image = models.ImageField(upload_to='media/images/profile', null=True, blank=True)
     phone = models.IntegerField(null=True, blank=True)
     emergency_phone = models.IntegerField(null=True, blank=True)
+    hourly_wage = models.IntegerField(null=True, blank=True)
+    date_joined = jmodels.jDateTimeField()
 
     def __str__(self):
         return self.user.username
 
+    def datetime_to_jalali(self):
+        return datetime2jalali(self.date_joined)
+
 class SalaryReceipt(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    payment_date = models
+    employee_code = models.IntegerField()
+    payment_date = jmodels.jDateField()
+    total_hours = models.FloatField()
+    salary = models.FloatField()
+
+    def date_to_jalali(self):
+        return date2jalali(self.payment_date)

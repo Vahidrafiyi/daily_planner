@@ -1,4 +1,7 @@
+import datetime
 from django.contrib.auth import logout
+from django.db.models import Sum
+from django_jalali.serializers.serializerfield import JDateField
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -7,8 +10,9 @@ from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from account.models import SignUp, Profile
-from account.serializers import RegistrationSerializer, Login, ProfileSerializer
+from account.models import SignUp, Profile, SalaryReceipt
+from account.serializers import RegistrationSerializer, Login, ProfileSerializer, SalaryReceiptSerializer
+from eventlog.models import EnterExit
 
 
 class RegisterationAPI(APIView):
@@ -58,4 +62,31 @@ class ProfileAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SalaryReceiptAPI(APIView):
+    def get(self, request, pk):
+        total_seconds = EnterExit.objects.filter(user_id=pk, is_paid=False).aggregate(total_seconds = Sum('work_time'))
+        total_hours = total_seconds['total_seconds'].total_seconds() / 3600
+        hourly_wage = Profile.objects.get(user_id=pk).hourly_wage
+        print(hourly_wage)
+        employee_code = Profile.objects.get(user_id=pk).employee_code
+        salary = (total_hours) * hourly_wage
+        query = SalaryReceipt.objects.create(
+            user_id=pk, payment_date=datetime.date.today(),
+            employee_code=employee_code,
+            total_hours=total_hours, salary=salary
+        )
+        data = {}
+        data['id'] = query.id
+        data['user'] = query.user.username
+        data['hourly wage'] = hourly_wage
+        data['total work hours'] = total_hours
+        data['salary'] = salary
+        data['payment day'] = query.payment_date
+        data['salary receipt code'] = query.employee_code
+        # if data.is_valid():
+        #     return data
+        serializer = SalaryReceiptSerializer(query, data)
+        return Response(data, status=status.HTTP_200_OK)
+
 

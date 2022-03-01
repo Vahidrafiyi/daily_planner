@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from account.models import SignUp, LogIn, Profile
+from account.models import SignUp, LogIn, Profile, SalaryReceipt
+from django_jalali.serializers.serializerfield import JDateField, JDateTimeField
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -41,3 +42,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         exclude = ['user']
+
+class SalaryReceiptSerializer(serializers.ModelSerializer):
+    payment_date = JDateField()
+    class Meta:
+        model = SalaryReceipt
+        fields = ['payment_date']

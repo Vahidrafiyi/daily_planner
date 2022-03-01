@@ -10,6 +10,7 @@ class EnterExit(models.Model):
     exit_time = jmodels.jDateTimeField(blank=True, null=True)
     work_time = models.DurationField(default=None, blank=True, null=True)
     date = jmodels.jDateField(default='1400-12-07')
+    is_paid = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Enter Exit'

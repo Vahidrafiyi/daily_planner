@@ -59,6 +59,7 @@ class EnterPlan(APIView):
         serializer = DailyPlannerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['user'] = request.user
+            serializer.validated_data['date'] = datetime.date.today()
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
