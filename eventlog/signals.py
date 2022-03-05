@@ -20,13 +20,8 @@ def log_user_login(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender = Token)
 def log_user_logout(sender, instance, **kwargs):
-        def get_sender(instance):
-            return sender.objects.get(user=instance.user)
-        get_sender(instance=instance)
         query = EnterExit.objects.filter(user=instance.user, date=datetime.date.today())
-        print(query)
-        # print(query.enter_time)
         query.update(exit_time=datetime.datetime.now())
-        # print(query)
+        print(query)
         work_time = query[0].exit_time - query[0].enter_time
         query.update(work_time=work_time)

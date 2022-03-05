@@ -44,7 +44,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         exclude = ['user']
 
 class SalaryReceiptSerializer(serializers.ModelSerializer):
-    payment_date = JDateField()
+    from_date = JDateField()
+    to_date = JDateField()
     class Meta:
         model = SalaryReceipt
-        fields = ['payment_date']
+        fields = ['user','from_date', 'to_date', 'hourly_wage']

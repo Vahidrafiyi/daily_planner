@@ -46,7 +46,7 @@ class EnterTodayGoalAPI(APIView):
 
     def patch(self, request):
         query = TodayGoal.objects.get(user=request.user, date=datetime.date.today())
-        serializer = TodayGoalSerializer(query, data=request.data)
+        serializer = TodayGoalSerializer(query, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -72,7 +72,7 @@ class AllPlan(APIView):
 
     def patch(self, request):
         query = DailyPlanner.objects.get(user=request.user, date=datetime.date.today())
-        serializer = DailyPlannerSerializer(query, data=request.data)
+        serializer = DailyPlannerSerializer(query, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -115,7 +115,7 @@ class TaskAPI(APIView):
 
     def patch(self, request):
         query = Task.objects.get(user=request.user)
-        serializer = TaskSerializer(query, data=request.data)
+        serializer = TaskSerializer(query, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -158,7 +158,7 @@ class SubTaskAPI(APIView):
 
     def patch(self, request):
         query = SubTask.objects.get(user=request.user)
-        serializer = SubTaskSerializer(query, data=request.data)
+        serializer = SubTaskSerializer(query, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.redirects',
     'rest_framework',
     'rest_framework.authtoken',
     'planner.apps.PlannerConfig',
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'django_jalali',
     'jalali_date',
 ]
+SITE_ID = 1
 
 JALALI_DATE_DEFAULTS = {
    'Strftime': {

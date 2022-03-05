@@ -13,4 +13,4 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @register(SalaryReceipt)
 class SalaryReceiptAdmin(admin.ModelAdmin):
-    list_display = ('user','employee_code', 'payment_date', 'salary' )
+    list_display = ('user','employee_code', 'to_date', 'salary' )
