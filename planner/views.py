@@ -1,17 +1,10 @@
 import datetime
 
 from django.contrib.auth.models import User
-from django.db.models import Q
-from django.http import HttpResponse
-from rest_framework import status, mixins
-from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import ValidationError
-from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
-from rest_framework.authtoken.views import ObtainAuthToken
 
 from planner.models import DailyPlanner, Task, SubTask, TodayGoal
 from planner.serializers import DailyPlannerSerializer, TaskSerializer, UserSerializer, \
@@ -52,6 +45,23 @@ class EnterTodayGoalAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class EnterDoneGoalAPI(APIView):
+    def patch(self, request, pk):
+        query = TodayGoal.objects.get(user_id=pk, date=datetime.date.today())
+        serializer = TodayGoalSerializer(query, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ShowTodayGoalPercentAPI(APIView):
+    def get(self, request, pk):
+        todaygoal_done = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today(),done=True)
+        todaygoal_count = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today()).count()
+        todaygoal = todaygoal_done / todaygoal_count
+        todaygoal_percent = format(todaygoal, '.2%')
+        serializer = TodayGoalSerializer(todaygoal_percent, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # DAILY PLAN API
 class EnterPlan(APIView):
@@ -77,11 +87,6 @@ class AllPlan(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class TaskAPI(ListAPIView):
-#     queryset = Task.objects.all()
-#     serializer_class = TaskSerializer
 
 class UserAPI(ListAPIView):
     queryset = User.objects.all()
@@ -184,7 +189,3 @@ class DrinkAPI(APIView):
     #         serializer.save()
     #         return Response(serializer.data, status=status.HTTP_200_OK)
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-

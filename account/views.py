@@ -17,7 +17,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import views
 from account.models import SignUp, Profile, SalaryReceipt
-from account.serializers import RegistrationSerializer, Login, ProfileSerializer, SalaryReceiptSerializer
+from account.serializers import RegistrationSerializer, ProfileSerializer, SalaryReceiptSerializer
 from eventlog.models import EnterExit
 
 
@@ -36,17 +36,6 @@ class RegisterationAPI(APIView):
         else:
             data = serializer.errors
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-class LoginAPI(APIView):
-    def post(self, request):
-        serializer = Login(data=request.data)
-        data = {}
-        if serializer.is_valid():
-            token = Token.objects.get_or_create(user=request.user)
-            data['token'] = token
-            data['username'] = request.user.username
-            return Response(data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
     def get(self, request, format=None):

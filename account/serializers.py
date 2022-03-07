@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from account.models import SignUp, LogIn, Profile, SalaryReceipt
+from account.models import SignUp, Profile, SalaryReceipt
 from django_jalali.serializers.serializerfield import JDateField, JDateTimeField
 
 
@@ -30,13 +30,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.save()
         return account
 
-class Login(serializers.ModelSerializer):
-    class Meta:
-        model = LogIn
-        fields = ['id','username', 'password']
-        extra_kwargs = {
-            'password': {'write_only':True}
-        }
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:

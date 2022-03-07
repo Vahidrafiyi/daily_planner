@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from account.views import RegisterationAPI, LoginAPI, Logout, ProfileAPI, SalaryReceiptAPI
+from account.views import RegisterationAPI, Logout, ProfileAPI, SalaryReceiptAPI
 app_name = 'account'
 urlpatterns = [
     path('signup/', RegisterationAPI.as_view()),

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from account.models import SignUp, LogIn, Profile, SalaryReceipt
+from account.models import SignUp, Profile, SalaryReceipt
 
 
 @register(SignUp)

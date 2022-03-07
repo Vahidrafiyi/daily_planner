@@ -8,7 +8,7 @@ import django_jalali.admin as jadmin
 
 @register(DailyPlanner)
 class DaillyPlannerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date', 'what_day', 'role')
+    list_display = ('user', 'date', 'what_day')
 
 @register(Task)
 class TaskAdmin(admin.ModelAdmin):
