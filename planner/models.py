@@ -59,12 +59,7 @@ class DailyPlanner(models.Model):
     # WED = 5
     # THU = 6
     # FRI = 7
-    ROLES = [
-        ('BOSS', 'BOSS'),
-        ('MANAGER', 'MANAGER'),
-        ('SUPERVISOR', 'SUPERVISOR'),
-        ('STAFF', 'STAFF'),
-    ]
+
     WHAT_DAYS = [
         ('SAT', 'SAT'),
         ('SUN', 'SUN'),
@@ -75,7 +70,6 @@ class DailyPlanner(models.Model):
         ('FRI', 'FRI'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plan+')
-    role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
     today_goal = models.ForeignKey(TodayGoal, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='plan+', null=True)
     sub_task = models.ForeignKey(SubTask, on_delete=models.CASCADE, related_name='plan+', null=True, blank=True)
@@ -99,3 +93,14 @@ class DailyPlanner(models.Model):
     def date_to_jalali(self):
         return date2jalali(self.date)
 
+
+class Feedback(models.Model):
+    title = models.CharField(max_length=255)
+    body = models.TextField()
+    date = jmodels.jDateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbackee')
+    daily_planner = models.ForeignKey(DailyPlanner, on_delete=models.CASCADE)
+    feedback_from = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacker')
+
+    def date_to_jalali(self):
+        return date2jalali(self.date)

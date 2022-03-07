@@ -15,19 +15,45 @@ class SignUp(models.Model):
     def __str__(self):
         return f'{self.username} signed up'
 
-class LogIn(models.Model):
-    username = models.CharField(max_length=24)
-    password = models.CharField(max_length=16)
-    
-    def __str__(self):
-        return f'{self.username} loged in'
+
+class Group(models.Model):
+    title = models.CharField(max_length=50)
+    user = models.ManyToManyField(User)
+
+
+class Notification(models.Model):
+    LEVEL = (
+        ('very_important', 'very_important'),
+        ('important', 'important'),
+        ('non_important', 'non_important'),
+    )
+    title = models.CharField(max_length=255)
+    body = models.TextField()
+    date = jmodels.jDateField()
+    expiration = jmodels.jDateField()
+    which_group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    level = models.CharField(max_length=32, choices=LEVEL, default=LEVEL[1][0])
+    seen = models.BooleanField(default=False)
+
+    def date_to_jalali(self):
+        return date2jalali(self.date)
+
 
 class Profile(models.Model):
     class Gender(models.TextChoices):
         MALE = 'male'
         FEMALE = 'female'
 
+    ROLES = [
+        ('BOSS', 'BOSS'),
+        ('MANAGER', 'MANAGER'),
+        ('SUPERVISOR', 'SUPERVISOR'),
+        ('STAFF', 'STAFF'),
+        ('TEACHER', 'TEACHER'),
+        ('FREELANCER', 'FREELANCER'),
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
     first_name = models.CharField(max_length=24, null=True, blank=True)
     last_name = models.CharField(max_length=24, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
@@ -65,3 +91,10 @@ class SalaryReceipt(models.Model):
 
     def __str__(self):
         return f'salary receipt for {self.user.username} at date: {self.to_date}'
+
+class WorkLeave(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = jmodels.jDateField()
+
+    def date_to_jalali(self):
+        return date2jalali(self.date)
