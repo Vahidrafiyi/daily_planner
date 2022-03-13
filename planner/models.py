@@ -41,6 +41,7 @@ class TodayGoal(models.Model):
     date = jmodels.jDateField(default='1400-12-07')
     done = models.BooleanField(default=False)
 
+
     def __str__(self):
         return f'{self.user.username} {self.today_goal}'
 

@@ -12,6 +12,9 @@ from rest_framework.authtoken.models import Token
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from eventlog.models import EnterExit
+from planner.models import TodayGoal
+from planner.serializers import TodayGoalSerializer
+
 
 @receiver(post_save, sender=Token)
 def log_user_login(sender, instance, created, **kwargs):
@@ -20,8 +23,13 @@ def log_user_login(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender = Token)
 def log_user_logout(sender, instance, **kwargs):
+        todaygoal_done = TodayGoal.objects.filter(user=instance.user, date=datetime.date.today(), done=True).count()
+        todaygoal_count = TodayGoal.objects.filter(user=instance.user, date=datetime.date.today()).count()
+        todaygoal = int((todaygoal_done / todaygoal_count) * 100)
+        # todaygoal_percent = format(todaygoal, '.2%')
+        print(todaygoal)
         query = EnterExit.objects.filter(user=instance.user, date=datetime.date.today())
         query.update(exit_time=datetime.datetime.now())
         print(query)
         work_time = query[0].exit_time - query[0].enter_time
-        query.update(work_time=work_time)
+        query.update(work_time=work_time, done_percent_goal=todaygoal)

@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from planner.models import DailyPlanner, Task, SubTask, TodayGoal
+from account.permissions import IsBoss
 from planner.serializers import DailyPlannerSerializer, TaskSerializer, UserSerializer, \
     SubTaskSerializer, TodayGoalSerializer
 
@@ -54,14 +55,18 @@ class EnterDoneGoalAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ShowTodayGoalPercentAPI(APIView):
-    def get(self, request, pk):
-        todaygoal_done = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today(),done=True)
-        todaygoal_count = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today()).count()
-        todaygoal = todaygoal_done / todaygoal_count
-        todaygoal_percent = format(todaygoal, '.2%')
-        serializer = TodayGoalSerializer(todaygoal_percent, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class ShowTodayGoalPercentAPI(APIView):
+#     def get(self, request, pk):
+#         todaygoal_done = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today(),done=True).count()
+#         todaygoal_count = TodayGoal.objects.filter(user_id=pk,date=datetime.date.today()).count()
+#         print(todaygoal_done)
+#         print(todaygoal_count)
+#         todaygoal = todaygoal_done / todaygoal_count
+#         todaygoal_percent = str(format(todaygoal, '.2%'))
+#         print(todaygoal_percent)
+#         serializer = EnterExitSerializer(todaygoal_percent, many=True)
+#         print(serializer.data)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # DAILY PLAN API
 class EnterPlan(APIView):

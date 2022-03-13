@@ -1,6 +1,6 @@
 from django.urls import path
 from planner.views import AllPlan, TaskAPI, UserAPI, EnterTaskAPI, EnterPlan, SubTaskAPI, EnterSubTaskAPI, \
-    EnterTodayGoalAPI, ShowTodayGoalAPI, DrinkAPI
+    EnterTodayGoalAPI, ShowTodayGoalAPI, DrinkAPI, EnterDoneGoalAPI
 
 urlpatterns = [
     # daily plan
@@ -23,6 +23,8 @@ urlpatterns = [
     path('drink/', DrinkAPI.as_view()),
     path('tasks/', TaskAPI.as_view()),
     path('users/', UserAPI.as_view()),
-    # path('today-plan/beverage', BeverageCreate.as_view()),
+    # path('today-plan/beverage', BeverageCreate.as_view())
+    path('done-goal/<int:pk>', EnterDoneGoalAPI.as_view())
+
 ]
 

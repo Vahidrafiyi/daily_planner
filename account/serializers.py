@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from account.models import SignUp, Profile, SalaryReceipt
+from account.models import SignUp, Profile, SalaryReceipt, Permission, Group
 from django_jalali.serializers.serializerfield import JDateField, JDateTimeField
 
 
@@ -42,3 +42,13 @@ class SalaryReceiptSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalaryReceipt
         fields = ['user','from_date', 'to_date', 'hourly_wage']
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = '__all__'
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = '__all__'

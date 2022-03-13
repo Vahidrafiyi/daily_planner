@@ -11,6 +11,7 @@ class EnterExit(models.Model):
     work_time = models.DurationField(default=None, blank=True, null=True)
     date = jmodels.jDateField(default='1400-12-07')
     is_paid = models.BooleanField(default=False)
+    done_percent_goal = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Enter Exit'
