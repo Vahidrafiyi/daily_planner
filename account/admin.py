@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from account.models import Profile, SalaryReceipt, Permission, Group, Notification
+from account.models import Profile, SalaryReceipt, Permission, Group, Announcement
 
 
 @register(Profile)
@@ -19,6 +19,6 @@ class PermissionAdmin(admin.ModelAdmin):
 class GroupAdmin(admin.ModelAdmin):
     list_display = ('title', 'hourly_wage')
 
-@register(Notification)
-class GroupAdmin(admin.ModelAdmin):
+@register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ('title', 'body', 'which_group')

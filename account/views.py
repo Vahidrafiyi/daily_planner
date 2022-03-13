@@ -90,7 +90,7 @@ class AllPermissionsAPI(ListAPIView):
     permission_classes = (IsBoss,)
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-from rest_framework.versioning import *
+
 class GroupAPI(APIView):
     def get(self, request, pk):
         querySet = Group.objects.all()

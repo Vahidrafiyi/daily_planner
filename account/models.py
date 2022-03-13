@@ -23,7 +23,7 @@ class Group(models.Model):
     def __str__(self):
         return self.title
 
-class Notification(models.Model):
+class Announcement(models.Model):
     LEVEL = (
         ('very_important', 'very_important'),
         ('important', 'important'),
@@ -45,17 +45,19 @@ class Notification(models.Model):
     )
     title = models.CharField(max_length=255)
     body = models.TextField()
-    date = jmodels.jDateField()
+    date = jmodels.jDateTimeField()
     expiration = jmodels.jDateTimeField()
     which_group = models.CharField(max_length=18, choices=WHICH_GROUP, default=WHICH_GROUP[8][0])
     level = models.CharField(max_length=32, choices=LEVEL, default=LEVEL[1][0])
-    seen = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
     def date_to_jalali(self):
-        return date2jalali(self.date)
+        return datetime2jalali(self.date)
+
+    def expiration_to_jalali(self):
+        return datetime2jalali(self.expiration)
 
 
 class Profile(models.Model):
@@ -76,7 +78,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
     group = models.ManyToManyField(Group, blank=True)
-    notification = models.ManyToManyField(Notification)
+    announcement = models.ManyToManyField(Announcement)
     # notification_body = models.ManyToManyField(Notification, through_fields='body')
     first_name = models.CharField(max_length=24, null=True, blank=True)
     last_name = models.CharField(max_length=24, null=True, blank=True)

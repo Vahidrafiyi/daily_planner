@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from account.models import Profile, SalaryReceipt, Notification
+from account.models import Profile, SalaryReceipt, Announcement
 from account.utils import create_5_digit_random
 from eventlog.models import EnterExit
 
@@ -24,7 +24,7 @@ def paid_salary(sender, created, instance, **kwargs):
     if created:
         EnterExit.objects.filter(user=instance.user, is_paid=False, date__range=[instance.from_date, instance.to_date]).update(is_paid=True)
 
-@receiver(post_save, sender= Notification)
+@receiver(post_save, sender= Announcement)
 def get_notification(sender, created, instance, **kwargs):
     if created:
         for profile in Profile.objects.filter(group__title=instance.which_group):
