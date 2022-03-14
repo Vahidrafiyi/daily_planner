@@ -8,3 +8,8 @@ class EnterExitSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnterExit
         fields = '__all__'
+
+class EnterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnterExit
+        fields = '__all__'

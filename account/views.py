@@ -5,9 +5,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
-from account.models import Profile, SalaryReceipt, Permission, Group
+from account.models import Profile, SalaryReceipt, Permission, Group, Announcement
 from account.serializers import RegistrationSerializer, ProfileSerializer, SalaryReceiptSerializer, \
-    PermissionSerializer, GroupSerializer
+    PermissionSerializer, GroupSerializer, AnnouncementSerializer
 from eventlog.models import EnterExit
 from account.permissions import IsBoss
 
@@ -116,3 +116,15 @@ class GroupAPI(APIView):
         query = Group.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class AnnouncementAPI(APIView):
+    def post(self, request):
+        serializer = AnnouncementSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request):
+        query_set = Announcement.objects.all()
+        serializer = AnnouncementSerializer(query_set, many=True)
+        return Response(serializer.data, status=200)

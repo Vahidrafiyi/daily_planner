@@ -21,4 +21,4 @@ class GroupAdmin(admin.ModelAdmin):
 
 @register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
-    list_display = ('title', 'body', 'which_group')
+    list_display = ('title', 'body')

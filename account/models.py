@@ -29,35 +29,26 @@ class Announcement(models.Model):
         ('important', 'important'),
         ('non_important', 'non_important'),
     )
-    WHICH_GROUP = (
+    ROLES = (
         ('BOSS', 'BOSS'),
         ('MANAGER', 'MANAGER'),
         ('SUPERVISOR', 'SUPERVISOR'),
-        ('STAFF', 'STAFF'),
-        ('ADMIN', 'ADMIN'),
-        ('TEACHER', 'TEACHER'),
-        ('INTERN', 'INTERN'),
-        ('FREELANCER', 'FREELANCER'),
-        ('ALL', 'ALL'),
-        ('WEB', 'WEB'),
-        ('GRAPHIC', 'GRAPHIC'),
-        ('CONTENT_PRODUCTION', 'CONTENT_PRODUCTION'),
+        ('STAFF', 'STAFF')
     )
     title = models.CharField(max_length=255)
     body = models.TextField()
-    date = jmodels.jDateTimeField()
-    expiration = jmodels.jDateTimeField()
-    which_group = models.CharField(max_length=18, choices=WHICH_GROUP, default=WHICH_GROUP[8][0])
+    date = jmodels.jDateField()
+    expiration = jmodels.jDateField()
     level = models.CharField(max_length=32, choices=LEVEL, default=LEVEL[1][0])
 
     def __str__(self):
         return self.title
 
     def date_to_jalali(self):
-        return datetime2jalali(self.date)
+        return date2jalali(self.date)
 
     def expiration_to_jalali(self):
-        return datetime2jalali(self.expiration)
+        return date2jalali(self.expiration)
 
 
 class Profile(models.Model):
@@ -76,10 +67,10 @@ class Profile(models.Model):
         ('INTERN', 'INTERN'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
+    first_role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0])
+    second_role = models.CharField(max_length=10, choices=ROLES, default=ROLES[3][0], null=True, blank=True)
     group = models.ManyToManyField(Group, blank=True)
-    announcement = models.ManyToManyField(Announcement)
-    # notification_body = models.ManyToManyField(Notification, through_fields='body')
+    announcement = models.ManyToManyField(Announcement, blank=True)
     first_name = models.CharField(max_length=24, null=True, blank=True)
     last_name = models.CharField(max_length=24, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
