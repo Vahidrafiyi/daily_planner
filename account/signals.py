@@ -12,7 +12,7 @@ from eventlog.models import EnterExit
 def save_profile_user(sender, **kwargs):
     print(kwargs)
     if kwargs['created']:
-        profile_user = Profile.objects.create(user=kwargs['instance'], employee_code=create_5_digit_random(), date_joined=datetime.date.today())
+        profile_user = Profile.objects.create(user=kwargs['instance'], employee_code=create_5_digit_random(), date_joined=datetime.datetime.now())
         print(profile_user)
         # profile_user.save()
 
