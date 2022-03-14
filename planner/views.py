@@ -79,7 +79,6 @@ class EnterPlan(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AllPlan(APIView):
     def get(self, request):
         queryset = DailyPlanner.objects.filter(user=request.user)
         serializer = DailyPlannerSerializer(queryset, many=True)
@@ -92,6 +91,20 @@ class AllPlan(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class AllPlan(APIView):
+#     def get(self, request):
+#         queryset = DailyPlanner.objects.filter(user=request.user)
+#         serializer = DailyPlannerSerializer(queryset, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def patch(self, request):
+#         query = DailyPlanner.objects.get(user=request.user, date=datetime.date.today())
+#         serializer = DailyPlannerSerializer(query, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserAPI(ListAPIView):
     queryset = User.objects.all()
@@ -115,8 +128,6 @@ class EnterTaskAPI(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class TaskAPI(APIView):
     def get(self, request):
         print(request.user)
         queryset = Task.objects.filter(date=datetime.date.today(), user=request.user)
@@ -130,6 +141,21 @@ class TaskAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class TaskAPI(APIView):
+#     def get(self, request):
+#         print(request.user)
+#         queryset = Task.objects.filter(date=datetime.date.today(), user=request.user)
+#         serializer = TaskSerializer(queryset, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def patch(self, request):
+#         query = Task.objects.get(user=request.user)
+#         serializer = TaskSerializer(query, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class BeverageCreate(CreateAPIView, mixins.DestroyModelMixin):
 #     serializer_class = BeverageSerializer
@@ -159,8 +185,6 @@ class EnterSubTaskAPI(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SubTaskAPI(APIView):
     def get(self, request):
         queryset = SubTask.objects.filter(user=request.user)
         serializer = SubTaskSerializer(queryset, many=True)
@@ -173,6 +197,20 @@ class SubTaskAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+# class SubTaskAPI(APIView):
+#     def get(self, request):
+#         queryset = SubTask.objects.filter(user=request.user)
+#         serializer = SubTaskSerializer(queryset, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def patch(self, request):
+#         query = SubTask.objects.get(user=request.user)
+#         serializer = SubTaskSerializer(query, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DrinkAPI(APIView):
     def get(self, request):
