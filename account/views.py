@@ -93,11 +93,21 @@ class AllPermissionsAPI(ListAPIView):
 
 class GroupAPI(APIView):
     def get(self, request, pk):
+        if len(pk) != 0:
+            data = {
+                'error' : 'you can not choose a specified id'
+            }
+            return Response(data, status=404)
         querySet = Group.objects.all()
         serializer = GroupSerializer(querySet, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, pk):
+        if len(pk) != 0:
+            data = {
+                'error' : 'you can not choose a specified id'
+            }
+            return Response(data, status=404)
         serializer = GroupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -105,17 +115,27 @@ class GroupAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk):
-        query = Group.objects.get(pk=pk)
-        serializer = GroupSerializer(query, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if len(pk) == 0:
+            data={}
+            data['error'] = 'you have to set a number as pk'
+            return Response(data, status=404)
+        else:
+            query = Group.objects.get(pk=pk)
+            serializer = GroupSerializer(query, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        query = Group.objects.get(pk=pk)
-        query.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if len(pk) == 0:
+            data={}
+            data['error'] = 'you have to set a number as pk'
+            return Response(data, status=404)
+        else:
+            query = Group.objects.get(pk=pk)
+            query.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AnnouncementAPI(APIView):
     def post(self, request):
