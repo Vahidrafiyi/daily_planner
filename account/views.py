@@ -119,23 +119,41 @@ class GroupAPI(APIView):
             data={}
             data['error'] = 'you have to set a number as pk'
             return Response(data, status=404)
-        else:
-            query = Group.objects.get(pk=pk)
-            serializer = GroupSerializer(query, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        query_set = Group.objects.all()
+        ids = []
+        for object in query_set:
+            ids.append(object.id)
+        if int(pk) not in ids:
+            data = {
+                'message': 'query match does not exists!'
+            }
+            return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
+        query = Group.objects.get(pk=pk)
+        serializer = GroupSerializer(query, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         if len(pk) == 0:
             data={}
             data['error'] = 'you have to set a number as pk'
             return Response(data, status=404)
-        else:
-            query = Group.objects.get(pk=pk)
-            query.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        query_set = Group.objects.all()
+        ids = []
+        for object in query_set:
+            ids.append(object.id)
+        if int(pk) not in ids:
+            data = {
+                'message': 'query match does not exists!'
+            }
+            return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        query = Group.objects.get(pk=pk)
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AnnouncementAPI(APIView):
     def post(self, request):
